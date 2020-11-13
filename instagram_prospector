@@ -1,0 +1,86 @@
+from selenium import webdriver
+from time import sleep
+from secrets import pw
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
+
+
+class Bot():
+
+    account_elements = []
+    accounts = []
+
+    def __init__(self):
+        self.driver = webdriver.Chrome()
+
+        # open webpage
+        self.driver.get('https://www.instagram.com/')
+        sleep(5)
+
+        # login details
+        username_input = self.driver.find_element_by_xpath("//input[@name='username']")
+        username_input.send_keys('fanmanhockey217')
+        password_input = self.driver.find_element_by_xpath("//input[@name='password']")
+        password_input.send_keys(pw)
+        submit_btn = self.driver.find_element_by_xpath("//button[@type='submit']")
+        submit_btn.click()
+        sleep(5)
+        not_now_1_btn = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/div/div/div/button')
+        not_now_1_btn.click()
+        not_now_2_btn = self.driver.find_element_by_xpath('/html/body/div[4]/div/div/div/div[3]/button[2]')
+        not_now_2_btn.click()
+
+        # search and read (singleton)
+        search_input = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/nav/div[2]/div/div/div[2]/input')
+        search_input.send_keys('#hockey')
+        sleep(5)
+        search_enter = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/nav/div[2]/div/div/div[2]/div[3]/div[2]/div/a[1]/div/div/div[1]/span')
+        search_enter.click()
+        sleep(5)
+        first_post = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/main/article/div[1]/div/div/div[1]/div[1]/a/div')
+        first_post.click()
+        sleep(5)
+        likes_button = self.driver.find_element_by_xpath('/html/body/div[4]/div[2]/div/article/div[3]/section[2]/div/div/button')
+
+        # number of likes on the post
+        n_likes_button = self.driver.find_element_by_xpath('/html/body/div[4]/div[2]/div/article/div[3]/section[2]/div/div/button/span')
+        num_likes = int(n_likes_button.get_attribute("innerHTML"))
+        print(num_likes)
+
+        # enter liking accounts
+        likes_button.click()
+        sleep(5)
+
+        # scroll down
+        #like_page = self.driver.find_element_by_xpath('/html/body/div[5]/div/div/div[2]/div/div')
+        #like_page.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        #sleep(10)
+        #scroll_button = self.driver.find_element_by_xpath('/html/body/div[5]/div/div/div[2]/div')
+        #scroll_button.send_keys(Keys.END)
+
+        #ActionChains(self.driver).click_and_hold(scroll_button).perform()
+        #sleep(5)
+        #ActionChains(self.driver).release(scroll_button).perform()
+
+        # testing pulling the title
+        account_elements = self.driver.find_elements_by_tag_name('a')
+
+        def condition(account_element):
+            return 'FPmhX notranslate MBL3Z' in account_element.get_attribute('class')
+
+        valid_account_elements = list(filter(condition, account_elements))
+
+        for i in range(12):
+            account_id = valid_account_elements[i].get_attribute('title')
+            self.accounts.append(account_id)
+
+        for i in self.accounts:
+            print(i)
+
+
+def main():
+    my_bot = Bot()
+
+
+if __name__ == '__main__':
+    main()
